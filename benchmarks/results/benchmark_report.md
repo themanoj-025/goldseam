@@ -1,8 +1,8 @@
 # Goldseam Benchmark Science & Evaluation Report
 
-**Date:** 2026-10-24T17:49:34.619109+00:00
+**Date:** 2026-10-24T18:12:09.778729+00:00
 **Total Cases:** 42 (32 Functional, 12 Held-Out, 5 Discard, 5 Injection)
-**Execution Duration:** 26.92s
+**Execution Duration:** 25.81s
 
 ---
 
@@ -31,20 +31,20 @@
 
 | ID | Category | Name | Triage | Status | Duration |
 |---|---|---|---|---|---|
-| BENCH-001 | functional | JSON stream parser | PASS | DONE | 911.04ms |
-| BENCH-002 | functional | CSV delimiter detector | PASS | DONE | 885.09ms |
-| BENCH-003 | functional | Windows path normalizer | PASS | DONE | 925.52ms |
-| BENCH-004 | functional | ISO-8601 date parser | PASS | DONE | 994.85ms |
-| BENCH-005 | functional | Regex escape cleaner | PASS | DONE | 851.27ms |
-| BENCH-006 | functional | UTF-8 BOM stripper | PASS | DONE | 878.6ms |
-| BENCH-007 | functional | Pagination cursor decoder | PASS | DONE | 852.44ms |
-| BENCH-008 | functional | Git commit message linter | PASS | DONE | 934.84ms |
-| BENCH-009 | functional | YAML frontmatter extractor | PASS | DONE | 934.55ms |
-| BENCH-010 | functional | Semver comparator | PASS | DONE | 937.0ms |
-| BENCH-011 | functional | Python traceback extractor | PASS | DONE | 955.85ms |
-| BENCH-012 | functional | URL query string parser | PASS | DONE | 955.83ms |
-| BENCH-013 | functional | Environment variable interpolator | PASS | DONE | 957.02ms |
-| BENCH-014 | functional | Pytest JUnit XML error parser | PASS | DONE | 1005.89ms |
-| BENCH-015 | functional | Base64 padding safe decoder | PASS | DONE | 850.61ms |
+| BENCH-001 | functional | JSON stream parser | PASS | DONE | 974.04ms |
+| BENCH-002 | functional | CSV delimiter detector | PASS | DONE | 915.37ms |
+| BENCH-003 | functional | Windows path normalizer | PASS | DONE | 926.92ms |
+| BENCH-004 | functional | ISO-8601 date parser | PASS | DONE | 857.35ms |
+| BENCH-005 | functional | Regex escape cleaner | PASS | DONE | 845.23ms |
+| BENCH-006 | functional | UTF-8 BOM stripper | PASS | DONE | 940.93ms |
+| BENCH-007 | functional | Pagination cursor decoder | PASS | DONE | 896.47ms |
+| BENCH-008 | functional | Git commit message linter | PASS | DONE | 968.28ms |
+| BENCH-009 | functional | YAML frontmatter extractor | PASS | DONE | 784.6ms |
+| BENCH-010 | functional | Semver comparator | PASS | DONE | 773.93ms |
+| BENCH-011 | functional | Python traceback extractor | PASS | DONE | 759.37ms |
+| BENCH-012 | functional | URL query string parser | PASS | DONE | 1030.27ms |
+| BENCH-013 | functional | Environment variable interpolator | PASS | DONE | 792.65ms |
+| BENCH-014 | functional | Pytest JUnit XML error parser | PASS | DONE | 748.23ms |
+| BENCH-015 | functional | Base64 padding safe decoder | PASS | DONE | 738.08ms |
 
 *Full report with all 42 detailed traces persisted in `benchmarks/results/benchmark_report.json`.*
