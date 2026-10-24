@@ -1,0 +1,34 @@
+{
+  "timestamp": "2026-10-24T17:59:50.952990+00:00",
+  "total_cases_per_run": 42,
+  "total_runtime_seconds": 49.05,
+  "ablations": [
+    {
+      "experiment": "Baseline (Full Pipeline)",
+      "max_repair": 3,
+      "policy": "standard",
+      "triage_accuracy_percent": 97.6,
+      "functional_build_success_percent": 96.9,
+      "hidden_oracle_pass_percent": 96.9,
+      "security_violations_installed": 0
+    },
+    {
+      "experiment": "No Self-Repair (Repair OFF)",
+      "max_repair": 0,
+      "policy": "standard",
+      "triage_accuracy_percent": 97.6,
+      "functional_build_success_percent": 0.0,
+      "hidden_oracle_pass_percent": 0.0,
+      "security_violations_installed": 0
+    },
+    {
+      "experiment": "Strict Security Policy",
+      "max_repair": 3,
+      "policy": "strict",
+      "triage_accuracy_percent": 97.6,
+      "functional_build_success_percent": 96.9,
+      "hidden_oracle_pass_percent": 96.9,
+      "security_violations_installed": 0
+    }
+  ]
+}

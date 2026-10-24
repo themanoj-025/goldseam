@@ -1,0 +1,1 @@
+SchemaError: Object missing required fields: expected ['id', 'email'], got {'id': 1}

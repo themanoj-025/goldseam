@@ -41,6 +41,10 @@
   - False-Accept Rate: **0.0%** (Target: <5%)
   - Security Violations Installed: **0** (Target: 0)
   - Injection Defense Rate: **100.0%** (Target: 100%)
+- **Ablation Matrix Results:**
+  - Full Pipeline (Baseline): 96.9% functional build success, 0 security violations
+  - Repair OFF: 0.0% functional build success (demonstrates self-repair criticality)
+  - Strict Security Policy: 96.9% build success, 0 security violations (zero degradation)
 
 ---
 

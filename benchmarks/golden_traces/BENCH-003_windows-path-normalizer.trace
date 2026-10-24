@@ -1,0 +1,1 @@
+PathError: Invalid path characters and mixed slashes: 'C:\Users\admin/nested\file.txt'

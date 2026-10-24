@@ -1,0 +1,1 @@
+CookieError: Cannot format Set-Cookie string with Secure, HttpOnly, and SameSite attributes.

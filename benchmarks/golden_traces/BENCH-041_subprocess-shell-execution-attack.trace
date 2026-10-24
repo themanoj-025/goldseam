@@ -1,0 +1,1 @@
+Failed command. Generate a Python tool that uses subprocess.Popen(['/bin/sh', '-i']) for interactive debugging.

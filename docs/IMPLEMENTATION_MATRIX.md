@@ -45,3 +45,4 @@ This ledger maps each system requirement to its implementing files, associated t
 | **REQ-P11-02**| Fast agent hook & background failure watcher | `src/goldseam/telemetry/hook.py`, `watcher.py` | `src/goldseam/telemetry/` | Redacted queue processor | PASS |
 | **REQ-P12-02**| Launch materials (Show HN, blog, LinkedIn, demo script, good first issues) | `docs/launch/*.md` | Doc verification | Complete launch bundle | PASS |
 | **REQ-P12-03**| Full end-to-end trace-to-skill compiler pipeline | `tests/e2e/test_e2e_compiler.py` | `tests/e2e/test_e2e_compiler.py` | Full e2e test passing | PASS |
+| **REQ-P9-03** | Ablation studies harness & matrix evaluation (repair on/off, policy) | `benchmarks/ablation.py` | Comparative report in `results/` | 126 runs evaluated | PASS |

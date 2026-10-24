@@ -1,0 +1,1 @@
+DockerError: Failed to decompose image string: 'ghcr.io/org/app:v1.2.3@sha256:abcdef'
