@@ -1,0 +1,5 @@
+--- a/config/settings.py
++++ b/config/settings.py
+@@ -10,1 +10,1 @@
+-TIMEOUT = 5
++TIMEOUT = 30  # Increased for slow external APIs

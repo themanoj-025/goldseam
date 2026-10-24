@@ -1,0 +1,33 @@
+name: Nightly Live Provider Evaluation
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 2 * * *"
+
+permissions:
+  contents: read
+
+jobs:
+  live-eval:
+    runs-on: ubuntu-latest
+    if: github.repository == 'goldseam/goldseam'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+      - name: Set up Python
+        run: uv python install 3.12
+      - name: Install dependencies
+        run: uv sync --extra dev --extra llm
+      - name: Run Opt-In Live Evaluation with Hard Spend Cap
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GOLDSEAM_SPEND_CAP_USD: "0.50"
+        run: |
+          if [ -n "$OPENAI_API_KEY" ]; then
+            uv run pytest tests/integration/test_live_providers.py -v
+          else
+            echo "No live API keys configured; skipping nightly live tests."
+          fi
