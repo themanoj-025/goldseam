@@ -1,0 +1,35 @@
+# Goldseam Repository Git Attributes
+# Set default behavior to automatically normalize line endings to LF
+* text=auto eol=lf
+
+# Explicit text files
+*.py text eol=lf
+*.toml text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.txt text eol=lf
+*.sh text eol=lf
+Dockerfile* text eol=lf
+
+# Binary files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.whl binary
+*.pyc binary
+
+# Linguist attributes for repository language statistics
+benchmarks/golden_traces/* linguist-vendored
+benchmarks/results/* linguist-generated
+tests/fixtures/* linguist-vendored
+
+# Archive export ignores
+.github/ export-ignore
+.tmp-audit/ export-ignore
+tests/ export-ignore
+benchmarks/ export-ignore
+.pre-commit-config.yaml export-ignore
