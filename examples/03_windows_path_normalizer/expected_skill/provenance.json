@@ -1,0 +1,20 @@
+{
+  "version": "1.0.0",
+  "timestamp": "2026-10-24T19:26:05.097917+00:00",
+  "skill_slug": "windows-path-normalizer",
+  "redacted_trace_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "model_ids": {
+    "compiler": "fake_llm"
+  },
+  "prompt_versions": {
+    "packager": "v1.0"
+  },
+  "policy_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "gate_results": [],
+  "artifact_hashes": {
+    "SKILL.md": "5b68f782cc2dfe583c55f69eb1e9911626147101f5b52abe7df55ed1f07d56d7",
+    "scripts/normalize_path.py": "85bca6804b7db61cda26b3f4373184d1fc3df4cb771661b197c3f5502d7b6b7d",
+    "tests/test_normalize_path.py": "696522a6683dc219b33bfc2a2a7e7498d93ec6d658feb3cc087e9d1a63aac029",
+    "goldseam.manifest.json": "3dc3bd231adf67b8a71093be2be2f6927386c29509d6480b9ffb6ca523722ca1"
+  }
+}

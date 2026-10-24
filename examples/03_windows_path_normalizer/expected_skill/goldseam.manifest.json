@@ -1,0 +1,29 @@
+{
+  "slug": "windows-path-normalizer",
+  "version": "0.1.0",
+  "description": "Normalizes Windows filesystem paths and sanitizes reserved device names.",
+  "risk_level": "LOW",
+  "tools": [
+    {
+      "name": "normalize_windows_path",
+      "purpose": "Normalizes Windows filesystem paths and sanitizes reserved device names",
+      "side_effects": [
+        "NONE"
+      ],
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "path_str": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "path_str"
+        ]
+      },
+      "output_schema": {
+        "type": "string"
+      }
+    }
+  ]
+}
