@@ -46,3 +46,7 @@ This ledger maps each system requirement to its implementing files, associated t
 | **REQ-P12-02**| Launch materials (Show HN, blog, LinkedIn, demo script, good first issues) | `docs/launch/*.md` | Doc verification | Complete launch bundle | PASS |
 | **REQ-P12-03**| Full end-to-end trace-to-skill compiler pipeline | `tests/e2e/test_e2e_compiler.py` | `tests/e2e/test_e2e_compiler.py` | Full e2e test passing | PASS |
 | **REQ-P9-03** | Ablation studies harness & matrix evaluation (repair on/off, policy) | `benchmarks/ablation.py` | Comparative report in `results/` | 126 runs evaluated | PASS |
+| **REQ-P11-03**| Standard SARIF v2.1.0 security & tamper export | `src/goldseam/security/sarif.py` | `tests/unit/test_sarif.py` | Validated SARIF output | PASS |
+| **REQ-P11-04**| Context pruning & model cost optimizer | `src/goldseam/llm/cost_optimizer.py` | `tests/unit/test_cost_optimizer.py` | Head/tail truncation tests | PASS |
+| **REQ-P12-04**| MkDocs static site & complete documentation suite | `mkdocs.yml`, `docs/*.md` | Doc verification | 14 documentation pages | PASS |
+| **REQ-P12-05**| Claude Code agent plugin packaging & tools | `integrations/claude_code/` | Tool spec verification | Claude Code integration | PASS |

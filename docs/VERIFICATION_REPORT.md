@@ -19,18 +19,18 @@ This report logs exact command outputs, timestamps, and test results across deve
 ### Pytest Full Suite
 ```bash
 $ uv run pytest
-============================== 73 passed in 6.62s ==============================
+============================== 76 passed in 5.58s ==============================
 ```
-- **Unit Suite:** `tests/unit/` (models, config, ingest, claude_code_jsonl, redaction, triage, analyzer, spec_designer, generator, testgen, packager, provenance, versioning, index, run_store, quality, coverage, mutation, determinism, mcp_server, streaming_large_log) — **45 passed**
+- **Unit Suite:** `tests/unit/` (models, config, ingest, claude_code_jsonl, redaction, triage, analyzer, spec_designer, generator, testgen, packager, provenance, versioning, index, run_store, quality, coverage, mutation, determinism, mcp_server, streaming_large_log, sarif, cost_optimizer) — **48 passed**
 - **Security Suite:** `tests/security/` (ast_visitor, secrets_scan, import_policy, bypass_corpus with 105 snippets, docker_sandbox fail-closed) — **15 passed**
 - **Integration Suite:** `tests/integration/` (orchestrator, repair, cli, bench, mcp) — **12 passed**
 - **End-to-End Suite:** `tests/e2e/` (test_e2e_compiler) — **1 passed**
-- **Total:** **73 passed, 0 failed, 0 errors**
+- **Total:** **76 passed, 0 failed, 0 errors**
 
 ### Static Type Checking (Mypy Strict)
 ```bash
 $ uv run mypy src
-Success: no issues found in 63 source files
+Success: no issues found in 65 source files
 ```
 
 ### Code Style & Formatting (Ruff)

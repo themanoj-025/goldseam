@@ -203,6 +203,7 @@ def build_cmd(
 def verify_cmd(
     skill_dir: Annotated[Path, typer.Argument(help="Path to installed skill directory")],
     as_json: Annotated[bool, typer.Option("--json", help="Structured JSON output")] = False,
+    sarif: Annotated[Path | None, typer.Option("--sarif", help="Export findings to SARIF file")] = None,
 ) -> None:
     """Verifies cryptographic provenance and detects single-byte tampering."""
     if not skill_dir.is_dir():
@@ -211,6 +212,12 @@ def verify_cmd(
 
     index = LibraryIndex(skill_dir.parent)
     valid, discrepancies = index.verify_skill(skill_dir)
+
+    if sarif:
+        from goldseam.security.sarif import SarifExporter
+
+        SarifExporter.write_sarif_file(sarif, skill_dir, valid, discrepancies)
+        console.print(f"[green]Exported SARIF report to '{sarif}'.[/green]")
 
     if as_json:
         console.print(json.dumps({"valid": valid, "discrepancies": discrepancies}, indent=2))

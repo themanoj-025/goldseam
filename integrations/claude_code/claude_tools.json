@@ -1,0 +1,43 @@
+[
+  {
+    "name": "goldseam_build",
+    "description": "Synthesizes an Agent Skill from a recent failure log or terminal error trace.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "log_path": {
+          "type": "string",
+          "description": "Path to the terminal error or trace log"
+        },
+        "dry_run": {
+          "type": "boolean",
+          "default": true,
+          "description": "If true, synthesizes proposal without installing"
+        }
+      },
+      "required": ["log_path"]
+    }
+  },
+  {
+    "name": "goldseam_verify",
+    "description": "Cryptographically verifies an installed skill directory and detects tampering.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "skill_dir": {
+          "type": "string",
+          "description": "Path to the installed skill directory"
+        }
+      },
+      "required": ["skill_dir"]
+    }
+  },
+  {
+    "name": "goldseam_list",
+    "description": "Lists all installed Agent Skills in the local Goldseam library.",
+    "parameters": {
+      "type": "object",
+      "properties": {}
+    }
+  }
+]

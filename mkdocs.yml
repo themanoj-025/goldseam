@@ -1,0 +1,54 @@
+site_name: Goldseam
+site_description: Failure-to-Skill Compiler for Autonomous Agents
+site_url: https://github.com/themanoj-025/goldseam
+repo_url: https://github.com/themanoj-025/goldseam
+repo_name: themanoj-025/goldseam
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+  features:
+    - content.code.copy
+    - navigation.sections
+    - navigation.top
+
+nav:
+  - Home: index.md
+  - Quickstart: quickstart.md
+  - Concepts: concepts.md
+  - Architecture: architecture.md
+  - Threat Model: threat-model.md
+  - CLI Reference: cli.md
+  - Security Policy: policy.md
+  - Ingest Adapters: adapters.md
+  - Sandbox Backends: backends.md
+  - Benchmark Science: benchmark_methods.md
+  - Decisions (ADR): DECISIONS.md
+  - Status & Verification:
+      - Execution Status: STATUS.md
+      - Implementation Matrix: IMPLEMENTATION_MATRIX.md
+      - Verification Report: VERIFICATION_REPORT.md
+      - Blockers & Diagnostics: BLOCKERS.md
+
+plugins:
+  - search
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: "!!python/name:pymdownx.superfences.fence_code_format"
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - tables
