@@ -30,8 +30,8 @@
 ---
 
 ## 3. Test & Quality Metrics
-- **Pytest:** 65 passed in 6.28s across unit, security, and integration suites.
-- **Mypy:** Strict mode passed (`Success: no issues found in 46 source files`).
+- **Pytest:** 73 passed in 6.62s across unit, security, integration, and e2e suites (100% pass rate).
+- **Mypy:** Strict mode passed (`Success: no issues found in 63 source files`).
 - **Ruff:** 0 errors (`All checks passed!`).
 - **Adversarial Bypass Corpus:** 105 / 105 bypass snippets detected and quarantined (100%).
 - **Benchmark Evaluation:**

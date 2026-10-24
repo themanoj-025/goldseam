@@ -14,6 +14,7 @@ class TraceEventKind(StrEnum):
     DIFF = "diff"
     ENVIRONMENT = "environment"
     ERROR = "error"
+    TOOL_CALL = "tool_call"
 
 
 class TraceEvent(BaseModel):

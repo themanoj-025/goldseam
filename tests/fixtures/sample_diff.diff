@@ -1,0 +1,5 @@
+--- a/utils/network.py
++++ b/utils/network.py
+@@ -15,1 +15,1 @@
+-DEFAULT_RETRIES = 1
++DEFAULT_RETRIES = 5  # Handle intermittent upstream connection resets

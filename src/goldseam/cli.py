@@ -92,10 +92,15 @@ def doctor_cmd(
         raise typer.Exit(code=0)
 
     console.print("[bold]Goldseam Pre-flight Diagnostics[/bold]")
-    console.print(f"Python: {py_version} [{'green' if py_ok else 'red'}{'OK' if py_ok else 'FAIL'}[/]]")
-    console.print(f"Docker Sandbox: [{'green' if docker_ok else 'yellow'}{'AVAILABLE' if docker_ok else 'UNAVAILABLE'}[/] ({docker_msg})")
-    console.print(f"Library Dir: {cfg.library_dir} [{'green' if lib_ok else 'red'}{'EXISTS' if lib_ok else 'MISSING'}[/]]")
-    console.print(f"Run Store Dir: {cfg.run_store_dir} [{'green' if runs_ok else 'red'}{'EXISTS' if runs_ok else 'MISSING'}[/]]")
+    py_badge = "[green]OK[/green]" if py_ok else "[red]FAIL[/red]"
+    docker_badge = "[green]AVAILABLE[/green]" if docker_ok else "[yellow]UNAVAILABLE[/yellow]"
+    lib_badge = "[green]EXISTS[/green]" if lib_ok else "[red]MISSING[/red]"
+    runs_badge = "[green]EXISTS[/green]" if runs_ok else "[red]MISSING[/red]"
+
+    console.print(f"Python: {py_version} ({py_badge})")
+    console.print(f"Docker Sandbox: {docker_badge} ({docker_msg})")
+    console.print(f"Library Dir: {cfg.library_dir} ({lib_badge})")
+    console.print(f"Run Store Dir: {cfg.run_store_dir} ({runs_badge})")
 
     if not docker_ok and not cfg.allow_weak_sandbox:
         console.print("\n[yellow]Notice:[/yellow] Docker daemon is offline. Untrusted skill installations will report BLOCKED without --allow-weak-sandbox.")

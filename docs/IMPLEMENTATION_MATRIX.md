@@ -35,5 +35,13 @@ This ledger maps each system requirement to its implementing files, associated t
 | **REQ-P8-01** | Typer & Rich CLI (`init`, `doctor`, `build`, `verify`, `review`, etc.) | `src/goldseam/cli.py` | `tests/integration/test_cli.py` | 8 passed CLI tests | PASS |
 | **REQ-P9-01** | 40+ synthetic benchmark cases with hidden test oracles | `benchmarks/` | `tests/integration/test_bench.py` | 42 cases, 97.6% triage | PASS |
 | **REQ-P10-01**| CI workflows (GitHub Actions, multi-OS matrix, CodeQL) | `.github/workflows/*.yml` | Packaging & workflow files | Wheel & sdist built | PASS |
-| **REQ-P11-01**| Human correction learning from git diff (`goldseam learn`) | `src/goldseam/cli.py`, `src/goldseam/core/` | `tests/integration/test_cli.py` | Learn CLI tests | PASS |
-| **REQ-P12-01**| Comprehensive documentation, ADRs, and offline examples | `docs/`, `examples/` | 5 end-to-end examples | Verified example logs | PASS |
+| **REQ-P4-05**| Claude Code JSONL & 50MB log streaming ingest | `src/goldseam/ingest/claude_code_jsonl.py` | `tests/unit/test_claude_jsonl.py`, `test_streaming_large_log.py` | 2 passed tests | PASS |
+| **REQ-P4-06**| LLM provider adapters (OpenAI, Anthropic, Ollama) & cache | `src/goldseam/llm/*.py` | `tests/unit/test_llm.py` | Unit tests & mock adapters | PASS |
+| **REQ-P5-05**| Failure analyzer & versioned prompt catalog | `src/goldseam/core/analyzer.py`, `prompts/v1/` | `tests/unit/test_analyzer.py` | Prompt & root cause tests | PASS |
+| **REQ-P7-04**| Semver comparator & breaking change detector | `src/goldseam/registry/versioning.py` | `tests/unit/test_versioning.py` | Semver bump tests | PASS |
+| **REQ-P7-05**| Goldseam MCP Server with tool discovery & verify | `src/goldseam/registry/mcp_server.py` | `tests/unit/test_mcp_server.py` | FastMCP smoke test | PASS |
+| **REQ-P9-02**| Quality evaluators (coverage, mutation, determinism) | `src/goldseam/quality/*.py` | `tests/unit/test_quality_evaluators.py` | Coverage & mutation tests | PASS |
+| **REQ-P10-02**| CI/PR proposal automation workflow | `.github/workflows/goldseam-proposal-pr.yml` | Workflow schema verification | Proposal PR workflow | PASS |
+| **REQ-P11-02**| Fast agent hook & background failure watcher | `src/goldseam/telemetry/hook.py`, `watcher.py` | `src/goldseam/telemetry/` | Redacted queue processor | PASS |
+| **REQ-P12-02**| Launch materials (Show HN, blog, LinkedIn, demo script, good first issues) | `docs/launch/*.md` | Doc verification | Complete launch bundle | PASS |
+| **REQ-P12-03**| Full end-to-end trace-to-skill compiler pipeline | `tests/e2e/test_e2e_compiler.py` | `tests/e2e/test_e2e_compiler.py` | Full e2e test passing | PASS |

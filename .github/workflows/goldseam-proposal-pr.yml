@@ -1,0 +1,46 @@
+name: Goldseam Failure-to-Skill Proposal Bot
+
+on:
+  workflow_run:
+    workflows: ["CI Matrix"]
+    types: [completed]
+
+jobs:
+  propose-skill:
+    name: Propose Skill from CI Failure
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install uv and Goldseam
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          uv pip install --system -e .
+
+      - name: Synthesize Skill Proposal (Dry Run)
+        run: |
+          goldseam build --need "Synthesize skill for failed CI step in run ${{ github.event.workflow_run.id }}" --dry-run --json > proposal.json
+
+      - name: Create Pull Request with Proposed Skill
+        uses: peter-evans/create-pull-request@v6
+        with:
+          title: "fix(skill): propose automated skill from failed CI run ${{ github.event.workflow_run.id }}"
+          body: |
+            ## Automated Skill Proposal
+            Goldseam analyzed a failed CI workflow and generated a proposed Agent Skill candidate.
+            
+            - **Requires Human Review:** Executable skills must be manually inspected and approved.
+            - **Provenance:** Review the generated `SKILL.md` and test suite before merging.
+          branch: "goldseam/proposal-${{ github.event.workflow_run.id }}"
+          labels: "goldseam-proposal, needs-human-review"
