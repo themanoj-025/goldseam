@@ -91,3 +91,12 @@ class ProvenanceTamperError(GoldseamError):
 
 class ReviewRejectedError(GoldseamError):
     """Raised when a human reviewer rejects or defers a generated skill proposal."""
+
+
+class PolicyViolationError(SecurityPolicyError):
+    """Raised when a security policy rule or trust contract is violated."""
+
+
+class PluginError(GoldseamError):
+    """Raised when discovering, loading, or verifying a plugin fails."""
+

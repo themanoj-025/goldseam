@@ -42,7 +42,7 @@ This ledger maps each system requirement to its implementing files, associated t
 | **REQ-P7-05**| Goldseam MCP Server with tool discovery & verify | `src/goldseam/registry/mcp_server.py` | `tests/unit/test_mcp_server.py` | FastMCP smoke test | PASS |
 | **REQ-P9-02**| Quality evaluators (coverage, mutation, determinism) | `src/goldseam/quality/*.py` | `tests/unit/test_quality_evaluators.py` | Coverage & mutation tests | PASS |
 | **REQ-P10-02**| CI/PR proposal automation workflow | `.github/workflows/goldseam-proposal-pr.yml` | Workflow schema verification | Proposal PR workflow | PASS |
-| **REQ-P11-02**| Fast agent hook & background failure watcher | `src/goldseam/telemetry/hook.py`, `watcher.py` | `src/goldseam/telemetry/` | Redacted queue processor | PASS |
+| **REQ-P11-02**| Fast agent hook & background failure watcher | `src/goldseam/telemetry/hook.py`, `watcher.py` | `tests/unit/test_telemetry.py` | 4 passed tests (redaction & proposals) | PASS |
 | **REQ-P12-02**| Launch materials (Show HN, blog, LinkedIn, demo script, good first issues) | `docs/launch/*.md` | Doc verification | Complete launch bundle | PASS |
 | **REQ-P12-03**| Full end-to-end trace-to-skill compiler pipeline | `tests/e2e/test_e2e_compiler.py` | `tests/e2e/test_e2e_compiler.py` | Full e2e test passing | PASS |
 | **REQ-P9-03** | Ablation studies harness & matrix evaluation (repair on/off, policy) | `benchmarks/ablation.py` | Comparative report in `results/` | 126 runs evaluated | PASS |
@@ -50,3 +50,11 @@ This ledger maps each system requirement to its implementing files, associated t
 | **REQ-P11-04**| Context pruning & model cost optimizer | `src/goldseam/llm/cost_optimizer.py` | `tests/unit/test_cost_optimizer.py` | Head/tail truncation tests | PASS |
 | **REQ-P12-04**| MkDocs static site & complete documentation suite | `mkdocs.yml`, `docs/*.md` | Doc verification | 14 documentation pages | PASS |
 | **REQ-P12-05**| Claude Code agent plugin packaging & tools | `integrations/claude_code/` | Tool spec verification | Claude Code integration | PASS |
+| **REQ-P11-05**| Library evolution manager, regression preservation & retirements | `src/goldseam/registry/evolution.py` | `tests/unit/test_evolution.py` | 2 passed tests | PASS |
+| **REQ-P11-06**| Pluggable entry points & trust contracts | `src/goldseam/plugins.py` | `tests/unit/test_plugins.py` | 5 passed tests | PASS |
+| **REQ-P11-07**| Multi-language JS/TS/Bash policies & runtime boundaries | `src/goldseam/security/multilang.py` | `tests/security/test_multilang.py` | 4 passed tests | PASS |
+| **REQ-P3-04** | Advanced sandbox backends (bwrap, wasm, remote with cost/privacy caps) | `src/goldseam/sandbox/backends/{bwrap,wasm,remote}.py` | `tests/security/test_sandbox_backends.py` | 6 passed tests | PASS |
+| **REQ-P11-08**| Terminal review dashboard & visual proposal inspectability | `src/goldseam/registry/dashboard.py` | `tests/integration/test_dashboard.py` | 2 passed tests | PASS |
+| **REQ-P11-09**| Curated policy packs & reproducible build metadata | `src/goldseam/security/policy_packs.py` | `tests/unit/test_policy_packs.py` | 4 passed tests | PASS |
+| **REQ-P11-10**| Human correction learning from before/after file pairs | `src/goldseam/cli.py` | `tests/integration/test_cli.py` | 13 passed tests | PASS |
+

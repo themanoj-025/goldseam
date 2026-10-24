@@ -197,6 +197,26 @@ def test_cli_learn(temp_workspace: Path) -> None:
     assert "Learned from diff" in res.stdout
 
 
+def test_cli_learn_before_after(temp_workspace: Path) -> None:
+    before_file = temp_workspace / "old.py"
+    after_file = temp_workspace / "new.py"
+    before_file.write_text("def run():\n    return 1\n", encoding="utf-8")
+    after_file.write_text("def run():\n    return 2\n", encoding="utf-8")
+
+    res = runner.invoke(
+        app,
+        [
+            "learn",
+            "--before", str(before_file),
+            "--after", str(after_file),
+            "--why", "Fix return value to 2",
+        ],
+    )
+    assert res.exit_code == 0
+    assert "Learned from diff" in res.stdout
+
+
+
 def test_cli_review_approve_and_reject(temp_workspace: Path) -> None:
     store = RunStore(temp_workspace / "runs")
     rec = store.create_run(run_id="run-review-app", source="test")

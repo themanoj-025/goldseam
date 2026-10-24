@@ -303,6 +303,7 @@ def review_cmd(
     run_id: Annotated[str, typer.Argument(help="Run ID to review")],
     approve: Annotated[bool, typer.Option("--approve", help="Approve and install proposal into library")] = False,
     reject: Annotated[str | None, typer.Option("--reject", help="Reject proposal with reason")] = None,
+    dashboard: Annotated[bool, typer.Option("--dashboard", help="Render full terminal review dashboard")] = False,
     as_json: Annotated[bool, typer.Option("--json", help="Structured JSON output")] = False,
 ) -> None:
     """Reviews a pending compilation proposal (diffs, declared side-effects, risks, and gate results)."""
@@ -333,6 +334,15 @@ def review_cmd(
             console.print(updated.model_dump_json(indent=2))
         else:
             console.print(f"[yellow]Proposal rejected:[/yellow] {reject}")
+        return
+
+    if dashboard:
+        from goldseam.registry.dashboard import ReviewDashboard
+
+        dash = ReviewDashboard(console)
+        dash.display(run)
+        console.print(f"\nTo approve: [bold]goldseam review {run.run_id} --approve[/bold]")
+        console.print(f"To reject:  [bold]goldseam review {run.run_id} --reject \"reason\"[/bold]")
         return
 
     spec = run.stage_data.get("spec", {})
@@ -370,6 +380,7 @@ def review_cmd(
 
     console.print(f"\nTo approve: [bold]goldseam review {run.run_id} --approve[/bold]")
     console.print(f"To reject:  [bold]goldseam review {run.run_id} --reject \"reason\"[/bold]")
+
 
 
 @app.command(name="resume")
@@ -428,17 +439,40 @@ def bench_cmd(
 
 @app.command(name="learn")
 def learn_cmd(
-    from_diff: Annotated[Path, typer.Option("--from-diff", help="Unified diff of correction")],
-    why: Annotated[str, typer.Option("--why", help="Human rationale for correction")],
+    from_diff: Annotated[Path | None, typer.Option("--from-diff", help="Unified diff file of correction")] = None,
+    before: Annotated[Path | None, typer.Option("--before", help="File state before correction")] = None,
+    after: Annotated[Path | None, typer.Option("--after", help="File state after correction")] = None,
+    why: Annotated[str, typer.Option("--why", help="Human rationale for correction")] = "",
     as_json: Annotated[bool, typer.Option("--json", help="Structured JSON output")] = False,
     dry_run: Annotated[bool, typer.Option("--dry-run", help="Synthesize proposal without installing")] = True,
 ) -> None:
-    """Synthesizes a rule or skill from a human code correction diff."""
-    if not from_diff.is_file():
-        err_console.print(f"[red]Error:[/red] Diff file '{from_diff}' not found")
+    """Synthesizes a rule or skill from a human code correction diff or before/after pair."""
+    import difflib
+
+    diff_content = ""
+    if from_diff:
+        if not from_diff.is_file():
+            err_console.print(f"[red]Error:[/red] Diff file '{from_diff}' not found")
+            raise typer.Exit(code=1)
+        diff_content = from_diff.read_text(encoding="utf-8")
+    elif before and after:
+        if not before.is_file():
+            err_console.print(f"[red]Error:[/red] Before file '{before}' not found")
+            raise typer.Exit(code=1)
+        if not after.is_file():
+            err_console.print(f"[red]Error:[/red] After file '{after}' not found")
+            raise typer.Exit(code=1)
+        before_lines = before.read_text(encoding="utf-8").splitlines(keepends=True)
+        after_lines = after.read_text(encoding="utf-8").splitlines(keepends=True)
+        diff_content = "".join(
+            difflib.unified_diff(
+                before_lines, after_lines, fromfile=str(before), tofile=str(after)
+            )
+        )
+    else:
+        err_console.print("[red]Error:[/red] Provide either --from-diff or both --before and --after")
         raise typer.Exit(code=1)
 
-    diff_content = from_diff.read_text(encoding="utf-8")
     full_prompt = f"Correction Diff:\n{diff_content}\n\nHuman Rationale: {why}"
     cfg = GoldseamConfig.load()
     adapter = GitDiffAdapter()
@@ -448,6 +482,7 @@ def learn_cmd(
     if as_json:
         console.print(record.model_dump_json(indent=2))
         return
+
 
     console.print(f"[green]Learned from diff:[/green] {from_diff}")
     console.print(f"- Rationale: {why}")
@@ -530,9 +565,27 @@ def proposals_cmd() -> None:
 def improve_cmd(
     slug: Annotated[str, typer.Argument(help="Skill slug name")],
     as_json: Annotated[bool, typer.Option("--json", help="Structured JSON output")] = False,
+    retire_check: Annotated[bool, typer.Option("--retire-check", help="Check retirement/deprecation status")] = False,
 ) -> None:
-    """Analyzes regression traces to improve an existing skill."""
+    """Analyzes regression traces and lifecycle evolution to improve an existing skill."""
+    from goldseam.registry.evolution import LibraryEvolutionManager
+
     cfg = GoldseamConfig.load()
+    evo = LibraryEvolutionManager(cfg)
+
+    if retire_check:
+        suggestions = evo.suggest_retirements()
+        target_sug = next((s for s in suggestions if s["slug"] == slug), None)
+        if as_json:
+            console.print(json.dumps(target_sug or {"slug": slug, "status": "UNKNOWN"}, indent=2))
+            return
+        if target_sug:
+            console.print(f"[bold]Retirement Assessment for '{slug}':[/bold]")
+            console.print(f"- Status: [bold]{target_sug['status']}[/bold]")
+            console.print(f"- Recommendation: [bold]{target_sug['recommendation']}[/bold]")
+            console.print(f"- Reason: {target_sug['reason']}")
+            return
+
     index = LibraryIndex(cfg.library_dir)
     skill = index.get_skill(slug)
     if not skill:
@@ -546,6 +599,7 @@ def improve_cmd(
     ]
 
     recommendations = [
+        "Preserve existing regression test assertions when upgrading",
         "Maintain test suites with new edge-case replays",
         "Verify cryptographic provenance with 'goldseam verify'",
     ]
@@ -567,3 +621,4 @@ def improve_cmd(
     console.print("- Recommendations:")
     for rec in recommendations:
         console.print(f"  • {rec}")
+
