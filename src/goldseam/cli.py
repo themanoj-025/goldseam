@@ -3,7 +3,7 @@
 import json
 import sys
 from pathlib import Path
-from typing import Annotated
+from typing import Annotated, Any
 
 import typer
 from rich.console import Console
@@ -119,6 +119,7 @@ def build_cmd(
     allow_weak_sandbox: Annotated[bool, typer.Option("--allow-weak-sandbox", help="Allow unhardened local runner")] = False,
     max_iter: Annotated[int, typer.Option("--max-iter", help="Max repair iterations")] = 3,
     budget: Annotated[float, typer.Option("--budget", help="Max USD budget")] = 1.00,
+    model: Annotated[str | None, typer.Option("--model", help="Stage model mapping: STAGE=ID")] = None,
     policy: Annotated[str, typer.Option("--policy", help="Security preset: strict, standard, permissive")] = "strict",
     dry_run: Annotated[bool, typer.Option("--dry-run", help="Synthesize proposal without sandbox execution")] = False,
     yes: Annotated[bool, typer.Option("--yes", help="Auto-approve if risk is low")] = False,
@@ -141,6 +142,14 @@ def build_cmd(
     elif from_stdin:
         raw_content = sys.stdin.read()
         source_name = "from_stdin"
+    elif from_transcript:
+        if not from_transcript.is_file():
+            err_console.print(f"[red]Error:[/red] Transcript file '{from_transcript}' not found")
+            raise typer.Exit(code=1)
+        raw_content = from_transcript.read_text(encoding="utf-8")
+        source_name = "from_transcript"
+        from goldseam.ingest.claude_code_jsonl import ClaudeCodeJsonlAdapter
+        adapter = ClaudeCodeJsonlAdapter()
     elif from_diff:
         if not from_diff.is_file():
             err_console.print(f"[red]Error:[/red] Diff file '{from_diff}' not found")
@@ -153,7 +162,7 @@ def build_cmd(
         source_name = "need"
         adapter = PlainNeedAdapter()
     else:
-        err_console.print("[red]Error:[/red] Provide --from-log, --from-stdin, --from-diff, or --need")
+        err_console.print("[red]Error:[/red] Provide --from-log, --from-stdin, --from-transcript, --from-diff, or --need")
         raise typer.Exit(code=1)
 
     cfg = GoldseamConfig.load(
@@ -174,6 +183,7 @@ def build_cmd(
         source=source_name,
         dry_run=dry_run,
         auto_approve=yes,
+        target=target,
     )
 
     if as_json:
@@ -289,26 +299,101 @@ def export_cmd(
 
 
 @app.command(name="review")
-def review_cmd(run_id: Annotated[str, typer.Argument(help="Run ID to review")]) -> None:
-    """Reviews a pending compilation proposal."""
+def review_cmd(
+    run_id: Annotated[str, typer.Argument(help="Run ID to review")],
+    approve: Annotated[bool, typer.Option("--approve", help="Approve and install proposal into library")] = False,
+    reject: Annotated[str | None, typer.Option("--reject", help="Reject proposal with reason")] = None,
+    as_json: Annotated[bool, typer.Option("--json", help="Structured JSON output")] = False,
+) -> None:
+    """Reviews a pending compilation proposal (diffs, declared side-effects, risks, and gate results)."""
     cfg = GoldseamConfig.load()
-    store = RunStore(cfg.run_store_dir)
-    run = store.get_run(run_id)
+    orch = Orchestrator(config=cfg)
+    run = orch.run_store.get_run(run_id)
     if not run:
         err_console.print(f"[red]Error:[/red] Run '{run_id}' not found")
         raise typer.Exit(code=1)
 
-    console.print(f"[bold]Reviewing Run:[/bold] {run.run_id} (Status: {run.status})")
-    console.print(f"Source: {run.source}")
-    if "spec" in run.stage_data:
-        console.print(f"Skill Slug: {run.stage_data['spec'].get('slug')}")
-        console.print(f"Description: {run.stage_data['spec'].get('description')}")
+    if approve:
+        if run.status != CompilationState.REVIEW:
+            err_console.print(f"[red]Error:[/red] Run '{run_id}' is in status {run.status}, cannot approve.")
+            raise typer.Exit(code=1)
+        dest = orch.approve_run(run_id)
+        if as_json:
+            console.print(json.dumps({"status": "DONE", "installed_dir": str(dest)}, indent=2))
+        else:
+            console.print(f"[green]Approved and installed skill:[/green] '{dest}'")
+        return
+
+    if reject is not None:
+        if run.status != CompilationState.REVIEW:
+            err_console.print(f"[red]Error:[/red] Run '{run_id}' is in status {run.status}, cannot reject.")
+            raise typer.Exit(code=1)
+        updated = orch.reject_run(run_id, reason=reject)
+        if as_json:
+            console.print(updated.model_dump_json(indent=2))
+        else:
+            console.print(f"[yellow]Proposal rejected:[/yellow] {reject}")
+        return
+
+    spec = run.stage_data.get("spec", {})
+    bundle_files = run.stage_data.get("bundle_files", [])
+    diagnosis = run.stage_data.get("diagnosis", {})
+    risk = spec.get("risk_assessment", {})
+
+    report = {
+        "run_id": run.run_id,
+        "status": run.status,
+        "source": run.source,
+        "slug": spec.get("slug", "unknown"),
+        "description": spec.get("description", "N/A"),
+        "risk": risk.get("level", "UNKNOWN") if isinstance(risk, dict) else str(risk),
+        "files": bundle_files,
+        "attempts": len(run.attempts),
+    }
+
+    if as_json:
+        console.print(json.dumps(report, indent=2))
+        return
+
+    console.print(f"[bold]Reviewing Compilation Proposal:[/bold] {run.run_id}")
+    console.print(f"- Status: [yellow]{run.status}[/yellow]")
+    console.print(f"- Skill Slug: [bold]{spec.get('slug', 'unknown')}[/bold]")
+    console.print(f"- Description: {spec.get('description', 'N/A')}")
+    risk_level = risk.get("level", "UNKNOWN") if isinstance(risk, dict) else str(risk)
+    console.print(f"- Risk Level: [bold]{risk_level}[/bold]")
+    console.print(f"- Failure Class: {diagnosis.get('failure_class', 'N/A')}")
+    console.print(f"- Generated Files ({len(bundle_files)}): {', '.join(bundle_files)}")
+    if run.attempts:
+        last_att = run.attempts[-1]
+        passed = sum(1 for g in last_att.gate_results if g.passed)
+        console.print(f"- Verified Gates: {passed} / {len(last_att.gate_results)} passed")
+
+    console.print(f"\nTo approve: [bold]goldseam review {run.run_id} --approve[/bold]")
+    console.print(f"To reject:  [bold]goldseam review {run.run_id} --reject \"reason\"[/bold]")
 
 
 @app.command(name="resume")
-def resume_cmd(run_id: Annotated[str, typer.Argument(help="Run ID to resume")]) -> None:
+def resume_cmd(
+    run_id: Annotated[str, typer.Argument(help="Run ID to resume")],
+    yes: Annotated[bool, typer.Option("--yes", help="Auto-approve if in review")] = False,
+    as_json: Annotated[bool, typer.Option("--json", help="Structured JSON output")] = False,
+) -> None:
     """Resumes a checkpointed compilation run."""
-    console.print(f"Resuming run {run_id}...")
+    cfg = GoldseamConfig.load()
+    orch = Orchestrator(config=cfg)
+    try:
+        updated = orch.resume_compilation(run_id, auto_approve=yes)
+    except Exception as e:
+        err_console.print(f"[red]Error:[/red] Failed to resume run '{run_id}': {e}")
+        raise typer.Exit(code=1) from e
+
+    if as_json:
+        console.print(updated.model_dump_json(indent=2))
+        return
+
+    console.print(f"[green]Resumed Run {run_id}:[/green] Current status: [bold]{updated.status}[/bold]")
+    if updated.error:
+        console.print(f"- Details: {updated.error}")
 
 
 @app.command(name="explain")
@@ -345,24 +430,88 @@ def bench_cmd(
 def learn_cmd(
     from_diff: Annotated[Path, typer.Option("--from-diff", help="Unified diff of correction")],
     why: Annotated[str, typer.Option("--why", help="Human rationale for correction")],
+    as_json: Annotated[bool, typer.Option("--json", help="Structured JSON output")] = False,
+    dry_run: Annotated[bool, typer.Option("--dry-run", help="Synthesize proposal without installing")] = True,
 ) -> None:
     """Synthesizes a rule or skill from a human code correction diff."""
     if not from_diff.is_file():
         err_console.print(f"[red]Error:[/red] Diff file '{from_diff}' not found")
         raise typer.Exit(code=1)
-    console.print(f"[green]Learned from diff:[/green] {from_diff} (Reason: {why})")
+
+    diff_content = from_diff.read_text(encoding="utf-8")
+    full_prompt = f"Correction Diff:\n{diff_content}\n\nHuman Rationale: {why}"
+    cfg = GoldseamConfig.load()
+    adapter = GitDiffAdapter()
+    orch = Orchestrator(config=cfg, ingest_adapter=adapter)
+    record = orch.run_compilation(raw_input=full_prompt, source="learn_diff", dry_run=dry_run)
+
+    if as_json:
+        console.print(record.model_dump_json(indent=2))
+        return
+
+    console.print(f"[green]Learned from diff:[/green] {from_diff}")
+    console.print(f"- Rationale: {why}")
+    console.print(f"- Compilation Status: [bold]{record.status}[/bold]")
+    if "rule" in record.stage_data:
+        rule = record.stage_data["rule"]
+        console.print(f"- Rule Synthesized: [bold]{rule.get('title')}[/bold] -> {rule.get('guideline')}")
+    elif "spec" in record.stage_data:
+        spec = record.stage_data["spec"]
+        console.print(f"- Skill Proposed: [bold]{spec.get('slug')}[/bold] -> {spec.get('description')}")
 
 
 @app.command(name="hook")
-def hook_cmd() -> None:
+def hook_cmd(
+    error: Annotated[str | None, typer.Option("--error", help="Error text to spool")] = None,
+    context: Annotated[str | None, typer.Option("--context", help="JSON metadata context")] = None,
+) -> None:
     """Ingests agent telemetry via fast non-blocking background hook."""
-    console.print("Goldseam telemetry hook registered.")
+    from goldseam.telemetry.hook import TelemetryHook
+
+    content = error
+    if not content:
+        if not sys.stdin.isatty():
+            content = sys.stdin.read().strip()
+
+    if not content:
+        console.print("Goldseam telemetry hook ready (provide --error or pipe via stdin).")
+        return
+
+    ctx_dict: dict[str, Any] = {}
+    if context:
+        try:
+            ctx_dict = json.loads(context)
+        except Exception:
+            ctx_dict = {"raw_context": context}
+
+    hook = TelemetryHook()
+    hook.record_failure(content, ctx_dict)
+    console.print("[green]Recorded failure event to Goldseam hook spool.[/green]")
 
 
 @app.command(name="watch")
-def watch_cmd() -> None:
+def watch_cmd(
+    as_json: Annotated[bool, typer.Option("--json", help="Emit structured JSON")] = False,
+) -> None:
     """Monitors incoming failures and clusters recurring patterns."""
-    console.print("Goldseam background watcher active.")
+    from goldseam.telemetry.watcher import TelemetryWatcher
+
+    watcher = TelemetryWatcher()
+    clusters = watcher.cluster_failures()
+
+    if as_json:
+        console.print(json.dumps(clusters, indent=2))
+        return
+
+    console.print(f"[bold]Goldseam Failure Watcher:[/bold] Found {len(clusters)} recurring error clusters.")
+    for sig, entries in clusters.items():
+        console.print(f"- Cluster [bold]{sig}[/bold]: {len(entries)} events")
+        if entries:
+            sample = str(entries[0].get("error_text", ""))[:80]
+            console.print(f"  Sample: {sample}...")
+
+    if not clusters:
+        console.print("[dim]No failure events recorded in spool. Telemetry spool is clear.[/dim]")
 
 
 @app.command(name="proposals")
@@ -378,6 +527,43 @@ def proposals_cmd() -> None:
 
 
 @app.command(name="improve")
-def improve_cmd(slug: Annotated[str, typer.Argument(help="Skill slug name")]) -> None:
+def improve_cmd(
+    slug: Annotated[str, typer.Argument(help="Skill slug name")],
+    as_json: Annotated[bool, typer.Option("--json", help="Structured JSON output")] = False,
+) -> None:
     """Analyzes regression traces to improve an existing skill."""
-    console.print(f"Analyzing improvement candidates for skill '{slug}'...")
+    cfg = GoldseamConfig.load()
+    index = LibraryIndex(cfg.library_dir)
+    skill = index.get_skill(slug)
+    if not skill:
+        err_console.print(f"[red]Error:[/red] Skill '{slug}' not found in library.")
+        raise typer.Exit(code=1)
+
+    store = RunStore(cfg.run_store_dir)
+    runs = store.list_runs()
+    related_runs = [
+        r for r in runs if r.stage_data.get("spec", {}).get("slug") == slug
+    ]
+
+    recommendations = [
+        "Maintain test suites with new edge-case replays",
+        "Verify cryptographic provenance with 'goldseam verify'",
+    ]
+    report = {
+        "slug": slug,
+        "description": skill.get("description", "N/A"),
+        "related_runs_count": len(related_runs),
+        "status": "HEALTHY" if related_runs else "PRISTINE",
+        "recommendations": recommendations,
+    }
+
+    if as_json:
+        console.print(json.dumps(report, indent=2))
+        return
+
+    console.print(f"[bold]Skill Improvement Analysis: {slug}[/bold]")
+    console.print(f"- Description: {skill.get('description', 'N/A')}")
+    console.print(f"- Historical Compilation Runs: {len(related_runs)}")
+    console.print("- Recommendations:")
+    for rec in recommendations:
+        console.print(f"  • {rec}")

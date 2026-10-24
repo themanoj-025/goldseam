@@ -30,8 +30,9 @@
 ---
 
 ## 3. Test & Quality Metrics
-- **Pytest:** 76 passed in 5.58s across unit, security, integration, and e2e suites (100% pass rate).
-- **Mypy:** Strict mode passed (`Success: no issues found in 65 source files`).
+- **Pytest:** 80 passed in 8.46s across unit, security, integration, and e2e suites (100% pass rate).
+- **Mypy:** Strict mode passed (`Success: no issues found in 100 source files` across `src` and `tests`).
+- **PEP 561 Typing Marker:** `src/goldseam/py.typed` present and verified.
 - **Ruff:** 0 errors (`All checks passed!`).
 - **Adversarial Bypass Corpus:** 105 / 105 bypass snippets detected and quarantined (100%).
 - **Benchmark Evaluation:**
