@@ -263,13 +263,13 @@ uv run ruff check .
 
 ## Documentation Index
 
-- [Execution Status and Audit Log](docs/STATUS.md)
-- [Requirements Verification Matrix](docs/IMPLEMENTATION_MATRIX.md)
-- [Pre-flight Diagnostics and Blocker Runbook](docs/BLOCKERS.md)
-- [Architecture & Data Flow](docs/architecture.md)
-- [Security Policy & Threat Model](docs/threat-model.md)
-- [CLI Reference Guide](docs/cli.md)
-- [Verification Report & Execution Logs](docs/VERIFICATION_REPORT.md)
+- [Quickstart Guide](docs/getting-started/quickstart.md)
+- [Core Concepts](docs/getting-started/concepts.md)
+- [Architecture & Data Flow](docs/architecture/overview.md)
+- [Security Policy](docs/security/policy.md)
+- [Threat Model](docs/security/threat-model.md)
+- [CLI Reference Guide](docs/reference/cli.md)
+- [Decisions (ADR)](docs/adr/index.md)
 
 ---
 

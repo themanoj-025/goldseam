@@ -18,9 +18,10 @@ Goldseam ingests untrusted agent traces, logs, transcripts, and developer correc
 
 ## Quick Navigation
 
-- [Quickstart Guide](quickstart.md) — 3-command setup and trial run
-- [Core Concepts](concepts.md) — Architectural taxonomy (Route, Trace, SkillSpec, ReplayOracle)
-- [System Architecture](architecture.md) — Multi-stage compilation pipeline & state machine
-- [Threat Model](threat-model.md) — STRIDE security model & sandbox invariants
-- [CLI Reference](cli.md) — Complete command documentation
-- [Benchmark Science](benchmark_methods.md) — 42 golden benchmarks and ablation studies
+- [Quickstart Guide](getting-started/quickstart.md) — 3-command setup and trial run
+- [Core Concepts](getting-started/concepts.md) — Architectural taxonomy (Route, Trace, SkillSpec, ReplayOracle)
+- [System Architecture](architecture/overview.md) — Multi-stage compilation pipeline & state machine
+- [Threat Model](security/threat-model.md) — STRIDE security model & sandbox invariants
+- [CLI Reference](reference/cli.md) — Complete command documentation
+- [Benchmark Science](benchmarks/methodology.md) — 42 golden benchmarks and ablation studies
+- [Architecture Decisions](adr/index.md) — Key engineering decisions and ADRs

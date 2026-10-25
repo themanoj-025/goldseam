@@ -1,9 +1,7 @@
 # Model Context Protocol (MCP) Specification & Goldseam Integration Contract
 
-**Specification Baseline:** Model Context Protocol (MCP) by Anthropic  
-**Retrieval & Verification Date:** 2026-10-24  
+**Specification Baseline:** Model Context Protocol (MCP)  
 **SDK Requirement:** `mcp>=1.0.0` (FastMCP stdio interface)  
-**Status:** Pinned & Verified against Integration Tests (`tests/integration/test_mcp.py`)  
 
 ---
 

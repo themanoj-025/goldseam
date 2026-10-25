@@ -1,8 +1,6 @@
 # Agent Skills Specification & Goldseam Conformance Contract
 
 **Specification Baseline:** Agent Skills Protocol v1.0  
-**Retrieval & Verification Date:** 2026-10-24  
-**Status:** Pinned & Verified against Static Linter (`src/goldseam/security/skillmd_lint.py`)  
 
 ---
 
