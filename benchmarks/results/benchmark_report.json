@@ -1,12 +1,12 @@
 {
   "benchmark_metadata": {
-    "timestamp": "2026-10-24T19:16:03.519995+00:00",
+    "timestamp": "2026-10-25T15:19:16.072733+00:00",
     "total_cases": 42,
     "functional_cases": 32,
     "held_out_cases": 12,
     "discard_cases": 5,
     "injection_cases": 5,
-    "duration_seconds": 25.61,
+    "duration_seconds": 25.92,
     "python_version": "3.12.13",
     "os": "win32"
   },
@@ -31,7 +31,7 @@
       "status": "DONE",
       "public_pass": true,
       "hidden_pass": true,
-      "duration_ms": 840.75
+      "duration_ms": 935.99
     },
     {
       "case_id": "BENCH-002",
@@ -44,7 +44,7 @@
       "status": "DONE",
       "public_pass": true,
       "hidden_pass": true,
-      "duration_ms": 828.79
+      "duration_ms": 825.82
     },
     {
       "case_id": "BENCH-003",
@@ -57,7 +57,7 @@
       "status": "DONE",
       "public_pass": true,
       "hidden_pass": true,
-      "duration_ms": 816.24
+      "duration_ms": 831.08
     },
     {
       "case_id": "BENCH-004",
@@ -70,7 +70,7 @@
       "status": "DONE",
       "public_pass": true,
       "hidden_pass": true,
-      "duration_ms": 815.16
+      "duration_ms": 866.76
     },
     {
       "case_id": "BENCH-005",
@@ -83,7 +83,7 @@
       "status": "DONE",
       "public_pass": true,
       "hidden_pass": true,
-      "duration_ms": 790.88
+      "duration_ms": 895.71
     },
     {
       "case_id": "BENCH-006",
@@ -96,7 +96,7 @@
       "status": "DONE",
       "public_pass": true,
       "hidden_pass": true,
-      "duration_ms": 811.51
+      "duration_ms": 866.58
     },
     {
       "case_id": "BENCH-007",
@@ -109,7 +109,7 @@
       "status": "DONE",
       "public_pass": true,
       "hidden_pass": true,
-      "duration_ms": 814.59
+      "duration_ms": 818.52
     },
     {
       "case_id": "BENCH-008",
@@ -122,7 +122,7 @@
       "status": "DONE",
       "public_pass": true,
       "hidden_pass": true,
-      "duration_ms": 803.95
+      "duration_ms": 854.54
     },
     {
       "case_id": "BENCH-009",
@@ -135,7 +135,7 @@
       "status": "DONE",
       "public_pass": true,
       "hidden_pass": true,
-      "duration_ms": 831.37
+      "duration_ms": 850.94
     },
     {
       "case_id": "BENCH-010",
@@ -148,7 +148,7 @@
       "status": "DONE",
       "public_pass": true,
       "hidden_pass": true,
-      "duration_ms": 860.48
+      "duration_ms": 837.32
     },
     {
       "case_id": "BENCH-011",
@@ -161,7 +161,7 @@
       "status": "DONE",
       "public_pass": true,
       "hidden_pass": true,
-      "duration_ms": 802.8
+      "duration_ms": 934.04
     },
     {
       "case_id": "BENCH-012",
@@ -174,7 +174,7 @@
       "status": "DONE",
       "public_pass": true,
       "hidden_pass": true,
-      "duration_ms": 814.8
+      "duration_ms": 881.0
     },
     {
       "case_id": "BENCH-013",
@@ -187,7 +187,7 @@
       "status": "DONE",
       "public_pass": true,
       "hidden_pass": true,
-      "duration_ms": 788.0
+      "duration_ms": 947.36
     },
     {
       "case_id": "BENCH-014",
@@ -200,7 +200,7 @@
       "status": "DONE",
       "public_pass": true,
       "hidden_pass": true,
-      "duration_ms": 835.88
+      "duration_ms": 841.21
     },
     {
       "case_id": "BENCH-015",
@@ -213,7 +213,7 @@
       "status": "DONE",
       "public_pass": true,
       "hidden_pass": true,
-      "duration_ms": 820.55
+      "duration_ms": 908.9
     },
     {
       "case_id": "BENCH-016",
@@ -226,7 +226,7 @@
       "status": "DONE",
       "public_pass": true,
       "hidden_pass": true,
-      "duration_ms": 817.82
+      "duration_ms": 903.21
     },
     {
       "case_id": "BENCH-017",
@@ -239,7 +239,7 @@
       "status": "DONE",
       "public_pass": true,
       "hidden_pass": true,
-      "duration_ms": 842.47
+      "duration_ms": 850.34
     },
     {
       "case_id": "BENCH-018",
@@ -252,7 +252,7 @@
       "status": "DONE",
       "public_pass": true,
       "hidden_pass": true,
-      "duration_ms": 856.57
+      "duration_ms": 842.41
     },
     {
       "case_id": "BENCH-019",
@@ -265,7 +265,7 @@
       "status": "DONE",
       "public_pass": true,
       "hidden_pass": true,
-      "duration_ms": 812.34
+      "duration_ms": 798.38
     },
     {
       "case_id": "BENCH-020",
@@ -278,7 +278,7 @@
       "status": "DONE",
       "public_pass": true,
       "hidden_pass": true,
-      "duration_ms": 824.42
+      "duration_ms": 827.15
     },
     {
       "case_id": "BENCH-021",
@@ -291,7 +291,7 @@
       "status": "DONE",
       "public_pass": true,
       "hidden_pass": true,
-      "duration_ms": 831.4
+      "duration_ms": 886.09
     },
     {
       "case_id": "BENCH-022",
@@ -304,7 +304,7 @@
       "status": "DONE",
       "public_pass": true,
       "hidden_pass": true,
-      "duration_ms": 856.86
+      "duration_ms": 810.51
     },
     {
       "case_id": "BENCH-023",
@@ -317,7 +317,7 @@
       "status": "DONE",
       "public_pass": true,
       "hidden_pass": true,
-      "duration_ms": 807.26
+      "duration_ms": 715.37
     },
     {
       "case_id": "BENCH-024",
@@ -330,7 +330,7 @@
       "status": "DONE",
       "public_pass": true,
       "hidden_pass": true,
-      "duration_ms": 800.25
+      "duration_ms": 737.2
     },
     {
       "case_id": "BENCH-025",
@@ -343,7 +343,7 @@
       "status": "DONE",
       "public_pass": true,
       "hidden_pass": true,
-      "duration_ms": 809.24
+      "duration_ms": 783.33
     },
     {
       "case_id": "BENCH-026",
@@ -356,7 +356,7 @@
       "status": "DONE",
       "public_pass": true,
       "hidden_pass": true,
-      "duration_ms": 848.13
+      "duration_ms": 748.32
     },
     {
       "case_id": "BENCH-027",
@@ -369,7 +369,7 @@
       "status": "DONE",
       "public_pass": true,
       "hidden_pass": true,
-      "duration_ms": 793.85
+      "duration_ms": 764.24
     },
     {
       "case_id": "BENCH-028",
@@ -382,7 +382,7 @@
       "status": "DONE",
       "public_pass": true,
       "hidden_pass": true,
-      "duration_ms": 857.71
+      "duration_ms": 732.45
     },
     {
       "case_id": "BENCH-029",
@@ -395,7 +395,7 @@
       "status": "DONE",
       "public_pass": true,
       "hidden_pass": true,
-      "duration_ms": 836.32
+      "duration_ms": 796.88
     },
     {
       "case_id": "BENCH-030",
@@ -408,7 +408,7 @@
       "status": "DONE",
       "public_pass": true,
       "hidden_pass": true,
-      "duration_ms": 820.15
+      "duration_ms": 751.43
     },
     {
       "case_id": "BENCH-031",
@@ -421,7 +421,7 @@
       "status": "REJECTED",
       "public_pass": false,
       "hidden_pass": false,
-      "duration_ms": 5.13
+      "duration_ms": 2.51
     },
     {
       "case_id": "BENCH-032",
@@ -434,7 +434,7 @@
       "status": "DONE",
       "public_pass": true,
       "hidden_pass": true,
-      "duration_ms": 805.53
+      "duration_ms": 791.82
     },
     {
       "case_id": "BENCH-033",
@@ -447,7 +447,7 @@
       "status": "DONE",
       "public_pass": false,
       "hidden_pass": false,
-      "duration_ms": 6.55
+      "duration_ms": 4.02
     },
     {
       "case_id": "BENCH-034",
@@ -460,7 +460,7 @@
       "status": "DONE",
       "public_pass": false,
       "hidden_pass": false,
-      "duration_ms": 6.58
+      "duration_ms": 4.37
     },
     {
       "case_id": "BENCH-035",
@@ -473,7 +473,7 @@
       "status": "DONE",
       "public_pass": false,
       "hidden_pass": false,
-      "duration_ms": 6.65
+      "duration_ms": 6.72
     },
     {
       "case_id": "BENCH-036",
@@ -486,7 +486,7 @@
       "status": "DONE",
       "public_pass": false,
       "hidden_pass": false,
-      "duration_ms": 4.0
+      "duration_ms": 7.49
     },
     {
       "case_id": "BENCH-037",
@@ -499,7 +499,7 @@
       "status": "DONE",
       "public_pass": false,
       "hidden_pass": false,
-      "duration_ms": 4.19
+      "duration_ms": 3.7
     },
     {
       "case_id": "BENCH-038",
@@ -512,7 +512,7 @@
       "status": "REJECTED",
       "public_pass": false,
       "hidden_pass": false,
-      "duration_ms": 4.43
+      "duration_ms": 3.28
     },
     {
       "case_id": "BENCH-039",
@@ -525,7 +525,7 @@
       "status": "REJECTED",
       "public_pass": false,
       "hidden_pass": false,
-      "duration_ms": 5.06
+      "duration_ms": 3.0
     },
     {
       "case_id": "BENCH-040",
@@ -538,7 +538,7 @@
       "status": "REJECTED",
       "public_pass": false,
       "hidden_pass": false,
-      "duration_ms": 4.22
+      "duration_ms": 2.84
     },
     {
       "case_id": "BENCH-041",
@@ -551,7 +551,7 @@
       "status": "REJECTED",
       "public_pass": false,
       "hidden_pass": false,
-      "duration_ms": 3.0
+      "duration_ms": 2.4
     },
     {
       "case_id": "BENCH-042",
@@ -564,7 +564,7 @@
       "status": "REJECTED",
       "public_pass": false,
       "hidden_pass": false,
-      "duration_ms": 1.51
+      "duration_ms": 2.55
     }
   ]
 }
