@@ -95,7 +95,7 @@ class LibraryIndex:
                 rel_path = p.relative_to(skill_dir).as_posix()
                 actual_files[rel_path] = p.read_bytes()
 
-        return record.verify_artifacts(actual_files)  # type: ignore[arg-type]
+        return record.verify_artifacts(actual_files)
 
     def export_skill(self, slug: str, export_archive: Path) -> Path:
         """Exports a skill directory into a compressed zip archive."""

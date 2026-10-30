@@ -1,0 +1,6 @@
+# Git Blame Ignore Revisions
+# List commit SHAs for large-scale formatting or mass refactoring commits here.
+# Configure with: git config blame.ignoreRevsFile .git-blame-ignore-revs
+#
+# Format:
+# <40-character-full-commit-sha> # Description of revision

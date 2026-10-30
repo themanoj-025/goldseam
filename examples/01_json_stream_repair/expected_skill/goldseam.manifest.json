@@ -1,0 +1,32 @@
+{
+  "slug": "json-stream-parser",
+  "version": "0.1.0",
+  "description": "Parses streams of unbracketed concatenated JSON objects into structured lists.",
+  "risk_level": "LOW",
+  "tools": [
+    {
+      "name": "parse_json_stream",
+      "purpose": "Parses streams of unbracketed concatenated JSON objects",
+      "side_effects": [
+        "NONE"
+      ],
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "payload": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "payload"
+        ]
+      },
+      "output_schema": {
+        "type": "array",
+        "items": {
+          "type": "object"
+        }
+      }
+    }
+  ]
+}
