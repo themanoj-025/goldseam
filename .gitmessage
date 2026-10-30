@@ -1,0 +1,20 @@
+# <type>(<scope>): <subject> (max 72 chars)
+# |<----  Using a Maximum Of 72 Characters  ---->|
+#
+# Allowed <type> values:
+#   feat     (new feature or functionality)
+#   fix      (bug fix)
+#   docs     (documentation changes only)
+#   style    (code style / formatting changes, no production code change)
+#   refactor (refactoring code without changing public behavior)
+#   perf     (performance improvements)
+#   test     (adding or modifying test suites)
+#   build    (build system or dependency changes)
+#   ci       (continuous integration workflow changes)
+#   chore    (general maintenance tasks or tooling overhaul)
+#
+# Scope examples: cli, orchestrator, sandbox, security, telemetry, llm
+#
+# Body: Explain *what* and *why*, not *how*.
+#
+# Footer: Reference issues (e.g. Closes #123) or note breaking changes.

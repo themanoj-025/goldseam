@@ -1,8 +1,8 @@
 # Goldseam Ablation Evaluation Report
 
-**Date:** 2026-10-24T18:13:05.176289+00:00  
+**Date:** 2026-10-25T15:23:01.225465+00:00  
 **Cases Evaluated Per Run:** 42  
-**Total Runtime:** 47.17s  
+**Total Runtime:** 45.89s  
 
 ## Comparative Ablation Matrix
 

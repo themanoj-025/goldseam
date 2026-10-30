@@ -1,0 +1,20 @@
+{
+  "version": "1.0.0",
+  "timestamp": "2026-10-24T19:24:27.860401+00:00",
+  "skill_slug": "csv-delimiter-detector",
+  "redacted_trace_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "model_ids": {
+    "compiler": "fake_llm"
+  },
+  "prompt_versions": {
+    "packager": "v1.0"
+  },
+  "policy_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "gate_results": [],
+  "artifact_hashes": {
+    "SKILL.md": "1602ed3069acf7eff93159bafba58e3a3a82b20bddc24be920af250201145919",
+    "scripts/detect_delimiter.py": "0a59a153fecb8afb83f10a2d961ac04fbc2a524e8fd6d3742eb3cf27a41edf57",
+    "tests/test_detect_delimiter.py": "dbde86742862daf0b059c45d68be6341a52bd87db1592c0e52837487deb6d451",
+    "goldseam.manifest.json": "c47d3770fedde47e93f742b407fe46f8285f9be1d538733af6821e27771ec1a9"
+  }
+}

@@ -1,6 +1,7 @@
 """Provenance attestation models and tamper-detection hashing."""
 
 import hashlib
+from collections.abc import Mapping
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -36,7 +37,7 @@ class ProvenanceRecord(BaseModel):
             clean_bytes = content.replace(b"\r\n", b"\n")
         return hashlib.sha256(clean_bytes).hexdigest()
 
-    def verify_artifacts(self, actual_files: dict[str, str | bytes]) -> tuple[bool, list[str]]:
+    def verify_artifacts(self, actual_files: Mapping[str, str | bytes]) -> tuple[bool, list[str]]:
         """
         Verifies actual file contents against attested hashes.
         Returns (is_valid, list_of_discrepancies).

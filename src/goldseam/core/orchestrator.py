@@ -1,6 +1,5 @@
 """Durable state machine orchestrator managing end-to-end compilation and repair."""
 
-import datetime
 from enum import StrEnum
 from pathlib import Path
 
@@ -15,13 +14,15 @@ from goldseam.errors import SandboxBlockedError
 from goldseam.ingest.base import IngestAdapter
 from goldseam.ingest.terminal import TerminalLogAdapter
 from goldseam.llm.base import LLMClient
-from goldseam.models.bundle import GeneratedBundle
+from goldseam.models.bundle import GeneratedBundle, GeneratedFile
 from goldseam.models.diagnosis import Diagnosis, Route
 from goldseam.models.provenance import ProvenanceRecord
 from goldseam.models.result import Attempt, GateResult
 from goldseam.models.spec import RiskLevel, SkillSpec
 from goldseam.models.trace import NormalizedTrace
 from goldseam.quality.claims_audit import ClaimsAuditor
+from goldseam.registry.mcp_emitter import emit_mcp_server_script
+from goldseam.registry.packager import AtomicPackager, CollisionMode
 from goldseam.sandbox.base import SandboxRunner
 from goldseam.sandbox.runner import get_sandbox_runner
 from goldseam.sandbox.temp_env import staging_environment
@@ -87,6 +88,7 @@ class Orchestrator:
         source: str = "terminal_log",
         dry_run: bool = False,
         auto_approve: bool = False,
+        target: str = "agent-skills",
     ) -> RunRecord:
         """Executes the failure-to-skill compilation pipeline."""
         record = self.run_store.create_run(source=source)
@@ -155,6 +157,14 @@ class Orchestrator:
             record.status = CompilationState.TESTGEN
             test_files = self.testgen.generate_tests_for_spec(spec)
             bundle_files = list(bundle.files) + test_files
+            if target in ("mcp", "both"):
+                bundle_files.append(
+                    GeneratedFile(
+                        path="mcp_server.py",
+                        content=emit_mcp_server_script(spec),
+                        is_executable=True,
+                    )
+                )
             bundle = GeneratedBundle(
                 skill_slug=bundle.skill_slug,
                 files=bundle_files,
@@ -260,32 +270,15 @@ class Orchestrator:
 
             # 10. PACKAGE & INSTALL
             record.status = CompilationState.PACKAGE
-            target_skill_dir = self.config.library_dir / spec.slug
-            target_skill_dir.mkdir(parents=True, exist_ok=True)
-
-            # Write bundle artifacts
-            artifact_hashes: dict[str, str] = {}
-            for bf in bundle.files:
-                file_dest = target_skill_dir / bf.path
-                file_dest.parent.mkdir(parents=True, exist_ok=True)
-                with open(file_dest, "w", encoding="utf-8") as out_f:
-                    out_f.write(bf.content)
-                artifact_hashes[bf.path] = ProvenanceRecord.compute_sha256(bf.content)
-
-            # Generate and write provenance.json
-            now_iso = datetime.datetime.now(datetime.UTC).isoformat()
-            provenance = ProvenanceRecord(
-                timestamp=now_iso,
-                skill_slug=spec.slug,
-                redacted_trace_hash=record.trace_hash,
-                model_ids={"compiler": self.llm_client.name},
-                prompt_versions={"orchestrator": "v1.0"},
-                policy_hash=self.policy.policy_hash,
+            packager = AtomicPackager(self.config.library_dir)
+            packager.package_and_install(
+                bundle=bundle,
                 gate_results=record.attempts[-1].gate_results if record.attempts else [],
-                artifact_hashes=artifact_hashes,
+                trace_hash=record.trace_hash,
+                policy_hash=self.policy.policy_hash,
+                model_id=self.llm_client.name,
+                collision_mode=CollisionMode.BACKUP_AND_REPLACE,
             )
-            with open(target_skill_dir / "provenance.json", "w", encoding="utf-8") as pf:
-                pf.write(provenance.model_dump_json(indent=2))
 
             record.status = CompilationState.DONE
             self.run_store.save_run(record)
@@ -301,3 +294,65 @@ class Orchestrator:
             record.error = str(e)
             self.run_store.save_run(record)
             return record
+
+    def approve_run(self, run_id: str) -> Path:
+        """Approves a proposal currently in REVIEW state, atomically installing it into library."""
+        record = self.run_store.get_run(run_id)
+        if not record:
+            raise ValueError(f"Run record '{run_id}' not found")
+        if record.status != CompilationState.REVIEW:
+            raise ValueError(f"Run '{run_id}' is in state {record.status}, expected REVIEW")
+
+        spec_data = record.stage_data.get("spec")
+        bundle_data = record.stage_data.get("bundle")
+        if not spec_data or not bundle_data:
+            raise ValueError(f"Run '{run_id}' is missing spec or bundle stage data")
+
+        bundle = GeneratedBundle(**bundle_data)
+        packager = AtomicPackager(self.config.library_dir)
+        dest = packager.package_and_install(
+            bundle=bundle,
+            gate_results=record.attempts[-1].gate_results if record.attempts else [],
+            trace_hash=record.trace_hash,
+            policy_hash=self.policy.policy_hash,
+            model_id=self.llm_client.name,
+            collision_mode=CollisionMode.BACKUP_AND_REPLACE,
+        )
+        record.status = CompilationState.DONE
+        self.run_store.save_run(record)
+        return dest
+
+    def reject_run(self, run_id: str, reason: str = "Rejected by human reviewer") -> RunRecord:
+        """Rejects a proposal currently in REVIEW state."""
+        record = self.run_store.get_run(run_id)
+        if not record:
+            raise ValueError(f"Run record '{run_id}' not found")
+        record.status = CompilationState.REJECTED
+        record.error = reason
+        self.run_store.save_run(record)
+        return record
+
+    def resume_compilation(self, run_id: str, auto_approve: bool = False) -> RunRecord:
+        """Resumes a checkpointed compilation run from its last durable state."""
+        record = self.run_store.get_run(run_id)
+        if not record:
+            raise ValueError(f"Run record '{run_id}' not found in run store")
+
+        if record.status == CompilationState.DONE:
+            return record
+
+        if record.status == CompilationState.REVIEW:
+            if auto_approve or self.config.auto_approve_low_risk:
+                self.approve_run(run_id)
+                updated = self.run_store.get_run(run_id)
+                return updated or record
+            return record
+
+        # If interrupted before review or completion, re-run from checkpointed trace
+        trace_data = record.stage_data.get("trace")
+        if trace_data:
+            trace = NormalizedTrace(**trace_data)
+            raw_text = "\n".join(e.text for e in trace.events)
+            return self.run_compilation(raw_input=raw_text, source=record.source, auto_approve=auto_approve)
+
+        return record

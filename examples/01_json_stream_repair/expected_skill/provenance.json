@@ -1,0 +1,20 @@
+{
+  "version": "1.0.0",
+  "timestamp": "2026-10-24T19:23:38.575579+00:00",
+  "skill_slug": "json-stream-parser",
+  "redacted_trace_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "model_ids": {
+    "compiler": "fake_llm"
+  },
+  "prompt_versions": {
+    "packager": "v1.0"
+  },
+  "policy_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "gate_results": [],
+  "artifact_hashes": {
+    "SKILL.md": "a760ad76c6d6c42eb9cd72f6bd8a20539b80b31917a10515f570e776fdabebc8",
+    "scripts/parse_stream.py": "e34b649bfc61371c6aac6f902981bf2c08cda5c657b16cd32a3ec80f0edb3f41",
+    "tests/test_parse_stream.py": "52440f74e0cde1875451e7b591bfec5ac63fb149c95c6299d897e4b73f427a97",
+    "goldseam.manifest.json": "480872452f1c12845c7e22c09ba0102b4e34c34167c2e824edd39b5ffc655254"
+  }
+}

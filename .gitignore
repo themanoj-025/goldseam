@@ -1,18 +1,57 @@
-target/
-.venv/
+# Goldseam Repository Ignore Rules
+# Stack: Python >=3.11, Hatchling, uv, Pytest, Ruff, Mypy, MkDocs, Docker
+# Last reviewed: 2026-10-25
+
+# --- Operating system ---
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*~
+*.bak
+*.swp
+*.swo
+
+# --- Editors & IDEs ---
+.idea/
+*.iml
+.vs/
+*.sublime-workspace
+.history/
+.netrwhist
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/launch.json
+
+# --- Language & framework (Python) ---
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
 .Python
+lib/
+lib64/
+.mypy_cache/
+.ruff_cache/
+
+# --- Dependency directories ---
+.venv/
+venv/
+env/
+
+# --- Build & compiled output ---
 build/
-develop-eggs/
 dist/
+target/
+develop-eggs/
 downloads/
 eggs/
 .eggs/
-lib/
-lib64/
 parts/
 sdist/
 var/
@@ -22,15 +61,55 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+# MkDocs build directory
+site/
 
+# --- Test, coverage & benchmark output ---
 .pytest_cache/
 .coverage
+.coverage.*
 htmlcov/
-.mypy_cache/
-.ruff_cache/
 .hypothesis/
 
-.goldseam/
+# --- Logs, temp files, caches ---
+*.log
 scratch/
 tmp/
-*.log
+.cache/
+
+# --- Environment variables & secrets ---
+.env
+.env.*
+!.env.example
+!.env.sample
+!.env.template
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+credentials.json
+service-account*.json
+secrets.*
+*.tfstate
+*.tfstate.*
+.terraform/
+id_rsa*
+id_ed25519*
+.pypirc
+.netrc
+kubeconfig
+*.kubeconfig
+.aws/credentials
+.gcloud/
+
+# --- Local databases & runtime data ---
+*.sqlite
+*.sqlite3
+*.db
+*.dump
+
+# --- Project-specific custom rules ---
+# Ephemeral compiler workspace staging directories
+.goldseam/

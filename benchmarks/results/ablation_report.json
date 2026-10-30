@@ -1,7 +1,7 @@
 {
-  "timestamp": "2026-10-24T18:13:05.176289+00:00",
+  "timestamp": "2026-10-25T15:23:01.225465+00:00",
   "total_cases_per_run": 42,
-  "total_runtime_seconds": 47.17,
+  "total_runtime_seconds": 45.89,
   "ablations": [
     {
       "experiment": "Baseline (Full Pipeline)",

@@ -1,0 +1,29 @@
+{
+  "slug": "csv-delimiter-detector",
+  "version": "0.1.0",
+  "description": "Inspects raw tabular text and reliably detects the field delimiter character.",
+  "risk_level": "LOW",
+  "tools": [
+    {
+      "name": "detect_delimiter",
+      "purpose": "Detects field delimiter character from tabular text samples",
+      "side_effects": [
+        "NONE"
+      ],
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "sample_text": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "sample_text"
+        ]
+      },
+      "output_schema": {
+        "type": "string"
+      }
+    }
+  ]
+}

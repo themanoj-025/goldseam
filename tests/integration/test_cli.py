@@ -195,3 +195,149 @@ def test_cli_learn(temp_workspace: Path) -> None:
     res = runner.invoke(app, ["learn", "--from-diff", str(diff_file), "--why", "Update config value"])
     assert res.exit_code == 0
     assert "Learned from diff" in res.stdout
+
+
+def test_cli_learn_before_after(temp_workspace: Path) -> None:
+    before_file = temp_workspace / "old.py"
+    after_file = temp_workspace / "new.py"
+    before_file.write_text("def run():\n    return 1\n", encoding="utf-8")
+    after_file.write_text("def run():\n    return 2\n", encoding="utf-8")
+
+    res = runner.invoke(
+        app,
+        [
+            "learn",
+            "--before", str(before_file),
+            "--after", str(after_file),
+            "--why", "Fix return value to 2",
+        ],
+    )
+    assert res.exit_code == 0
+    assert "Learned from diff" in res.stdout
+
+
+
+def test_cli_review_approve_and_reject(temp_workspace: Path) -> None:
+    store = RunStore(temp_workspace / "runs")
+    rec = store.create_run(run_id="run-review-app", source="test")
+    rec.status = CompilationState.REVIEW
+    rec.stage_data = {
+        "spec": {"slug": "approved-skill", "description": "Auto approved", "tools": []},
+        "bundle": {
+            "skill_slug": "approved-skill",
+            "files": [
+                {"path": "SKILL.md", "content": "---\nname: approved-skill\ndescription: Test.\n---\n# T\n## When to use\n## When not to use\n## Preconditions\n## Steps\n## Examples\n## Failure modes\n## Safety notes\n", "is_executable": False},
+                {"path": "scripts/tool.py", "content": "def run(): pass\n", "is_executable": True},
+            ],
+            "description": "Bundle",
+        },
+    }
+    rec.trace_hash = "f" * 64
+    store.save_run(rec)
+
+    # 1. Test approve
+    res_app = runner.invoke(app, ["review", "run-review-app", "--approve"])
+    assert res_app.exit_code == 0
+    assert "Approved and installed skill" in res_app.stdout
+    assert (temp_workspace / "skills" / "approved-skill" / "SKILL.md").is_file()
+
+    # 2. Test reject
+    rec_rej = store.create_run(run_id="run-review-rej", source="test")
+    rec_rej.status = CompilationState.REVIEW
+    store.save_run(rec_rej)
+
+    res_rej = runner.invoke(app, ["review", "run-review-rej", "--reject", "Contains insecure pattern"])
+    assert res_rej.exit_code == 0
+    assert "Proposal rejected" in res_rej.stdout
+    updated_rec = store.get_run("run-review-rej")
+    assert updated_rec is not None
+    assert updated_rec.status == CompilationState.REJECTED
+
+
+def test_cli_resume(temp_workspace: Path) -> None:
+    store = RunStore(temp_workspace / "runs")
+    rec = store.create_run(run_id="run-resume-1", source="test")
+    rec.status = CompilationState.REVIEW
+    rec.stage_data = {
+        "spec": {"slug": "resumed-skill", "description": "Resumed test", "tools": []},
+        "bundle": {
+            "skill_slug": "resumed-skill",
+            "files": [
+                {"path": "SKILL.md", "content": "---\nname: resumed-skill\ndescription: Resumed.\n---\n# T\n## When to use\n## When not to use\n## Preconditions\n## Steps\n## Examples\n## Failure modes\n## Safety notes\n", "is_executable": False},
+            ],
+            "description": "Resumed",
+        },
+    }
+    rec.trace_hash = "e" * 64
+    store.save_run(rec)
+
+    res = runner.invoke(app, ["resume", "run-resume-1", "--yes"])
+    assert res.exit_code == 0
+    assert "Resumed Run run-resume-1" in res.stdout
+    assert (temp_workspace / "skills" / "resumed-skill" / "SKILL.md").is_file()
+
+
+def test_cli_build_transcript_and_target_mcp(temp_workspace: Path) -> None:
+    transcript_file = temp_workspace / "agent_session.jsonl"
+    transcript_file.write_text(
+        json.dumps({"type": "user", "content": "Parse this csv"}) + "\n" +
+        json.dumps({"type": "tool_result", "content": "Error: delimiter ';' not supported", "is_error": True}) + "\n",
+        encoding="utf-8",
+    )
+
+    res = runner.invoke(
+        app,
+        [
+            "build",
+            "--from-transcript",
+            str(transcript_file),
+            "--target",
+            "both",
+            "--dry-run",
+            "--json",
+        ],
+    )
+    assert res.exit_code == 0
+    data = json.loads(res.stdout)
+    assert data["status"] == "DONE"
+    files = data["stage_data"]["bundle_files"]
+    assert any("mcp_server.py" in f for f in files)
+
+
+def test_cli_hook_watch_improve(temp_workspace: Path) -> None:
+    # 1. Hook
+    res_hook = runner.invoke(app, ["hook", "--error", "TypeError: unsupported operand"])
+    assert res_hook.exit_code == 0
+    assert "Recorded failure event" in res_hook.stdout
+
+    # 2. Watch
+    res_watch = runner.invoke(app, ["watch", "--json"])
+    assert res_watch.exit_code == 0
+    clusters = json.loads(res_watch.stdout)
+    assert "TypeError:" in clusters
+
+    # 3. Improve
+    # First install a skill
+    lib = temp_workspace / "skills"
+    packager = AtomicPackager(lib)
+    bundle = GeneratedBundle(
+        skill_slug="active-skill",
+        files=[
+            GeneratedFile(
+                path="SKILL.md",
+                content="---\nname: active-skill\ndescription: An active skill.\n---\n# T\n## When to use\n## When not to use\n## Preconditions\n## Steps\n## Examples\n## Failure modes\n## Safety notes\n",
+            ),
+        ],
+    )
+    packager.package_and_install(
+        bundle=bundle,
+        gate_results=[GateResult(gate="schema", passed=True, outcome=GateOutcome.PASS)],
+        trace_hash="1" * 64,
+        policy_hash="2" * 64,
+        collision_mode=CollisionMode.OVERWRITE,
+    )
+
+    res_imp = runner.invoke(app, ["improve", "active-skill"])
+    assert res_imp.exit_code == 0
+    assert "Skill Improvement Analysis: active-skill" in res_imp.stdout
+

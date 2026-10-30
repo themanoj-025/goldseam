@@ -84,3 +84,37 @@ class RunStore:
                     runs.append(rec)
         runs.sort(key=lambda r: r.created_at, reverse=True)
         return runs
+
+    def prune_retention(self, max_age_days: int = 30, keep_max_runs: int = 100) -> int:
+        """Prunes old runs to ensure privacy-preserving retention and bounded storage."""
+        import shutil
+
+        runs = self.list_runs()
+        pruned_count = 0
+        now = datetime.datetime.now(datetime.UTC)
+        cutoff = now - datetime.timedelta(days=max_age_days)
+
+        for i, rec in enumerate(runs):
+            should_prune = False
+            # Check maximum count ceiling
+            if i >= keep_max_runs:
+                should_prune = True
+            else:
+                # Check age
+                try:
+                    created_dt = datetime.datetime.fromisoformat(rec.created_at)
+                    if created_dt.tzinfo is None:
+                        created_dt = created_dt.replace(tzinfo=datetime.UTC)
+                    if created_dt < cutoff:
+                        should_prune = True
+                except Exception:
+                    pass
+
+            if should_prune:
+                run_dir = self._run_dir(rec.run_id)
+                if run_dir.is_dir():
+                    shutil.rmtree(run_dir, ignore_errors=True)
+                    pruned_count += 1
+
+        return pruned_count
+
