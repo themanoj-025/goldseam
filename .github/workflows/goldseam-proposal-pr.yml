@@ -16,10 +16,10 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: "3.12"
 
@@ -33,7 +33,7 @@ jobs:
           goldseam build --need "Synthesize skill for failed CI step in run ${{ github.event.workflow_run.id }}" --dry-run --json > proposal.json
 
       - name: Create Pull Request with Proposed Skill
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@v8
         with:
           title: "fix(skill): propose automated skill from failed CI run ${{ github.event.workflow_run.id }}"
           body: |
