@@ -1,0 +1,6 @@
+# Gitleaks configuration
+title = "gitleaks config for goldseam"
+
+[extend]
+useDefault = true
+
