@@ -27,6 +27,11 @@ $RECYCLE.BIN/
 !.vscode/settings.json
 !.vscode/extensions.json
 !.vscode/launch.json
+.gemini/
+.claude/
+.cursor/
+.windsurf/
+.agents/
 
 # --- Language & framework (Python) ---
 __pycache__/
