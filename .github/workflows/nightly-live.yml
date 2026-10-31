@@ -13,9 +13,9 @@ jobs:
     runs-on: ubuntu-latest
     if: github.repository == 'goldseam/goldseam'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Install uv
-        uses: astral-sh/setup-uv@v3
+        uses: astral-sh/setup-uv@v7
       - name: Set up Python
         run: uv python install 3.12
       - name: Install dependencies
