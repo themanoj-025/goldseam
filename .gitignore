@@ -80,6 +80,13 @@ tmp/
 # --- Environment variables & secrets ---
 .env
 .env.*
+*.env
+.env.local
+.env.*.local
+.env.development
+.env.test
+.env.staging
+.env.production
 !.env.example
 !.env.sample
 !.env.template
@@ -87,28 +94,62 @@ tmp/
 *.key
 *.p12
 *.pfx
+*.pkcs12
+*.cer
+*.crt
+*.der
 *.jks
 *.keystore
+*.kdbx
+id_rsa*
+id_ed25519*
+id_ecdsa*
+id_dsa*
 credentials.json
+*credentials*.json
+client_secret*.json
+client_secrets*.json
 service-account*.json
+service_account*.json
+serviceAccountKey*.json
+google-services.json
+google-credentials*.json
+GoogleService-Info.plist
 secrets.*
+*.secrets.*
+.secrets
+.act-secrets
+*.publishsettings
 *.tfstate
 *.tfstate.*
 .terraform/
-id_rsa*
-id_ed25519*
-.pypirc
-.netrc
+.terraform.lock.hcl
 kubeconfig
 *.kubeconfig
-.aws/credentials
+.kube/
+.aws/
+.azure/
+.gcp/
 .gcloud/
+gcloud/
+.pypirc
+.netrc
+.npmrc
+*token*.json
+token.pickle
+auth*.json
 
 # --- Local databases & runtime data ---
 *.sqlite
 *.sqlite3
 *.db
+*.db-shm
+*.db-wal
+*.db-journal
 *.dump
+*.stackdump
+*.sql.gz
+*.rdb
 
 # --- Project-specific custom rules ---
 # Ephemeral compiler workspace staging directories
