@@ -35,3 +35,10 @@ def test_detect_injection_flags() -> None:
 
     assert "ROLE_SPOOF" in flags
     assert "INSTRUCTION_OVERRIDE" in flags
+
+
+def test_detect_markdown_tag_injection() -> None:
+    redactor = Redactor()
+    for sample in ("<script>alert(1)</script>", '<iframe src="x">', "</STYLE >"):
+        _, _, flags = redactor.redact(sample)
+        assert "MARKDOWN_TAG_INJECTION" in flags

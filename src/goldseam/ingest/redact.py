@@ -1,16 +1,53 @@
 """Privacy-preserving redaction engine for traces, credentials, and prompt injections."""
 
 import re
+from html.parser import HTMLParser
+
+_DANGEROUS_HTML_TAGS = frozenset({"script", "iframe", "style", "object"})
+
+
+class _DangerousTagDetector(HTMLParser):
+    """Detects dangerous HTML tags using stdlib parsing rather than regexes."""
+
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=False)
+        self.found = False
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        if tag.lower() in _DANGEROUS_HTML_TAGS:
+            self.found = True
+
+    def handle_endtag(self, tag: str) -> None:
+        if tag.lower() in _DANGEROUS_HTML_TAGS:
+            self.found = True
+
+
+def _has_dangerous_html_tag(text: str) -> bool:
+    detector = _DangerousTagDetector()
+    detector.feed(text)
+    detector.close()
+    return detector.found
+
 
 # Deterministic pattern matchers for redaction
 REDACTION_RULES = [
     ("API_KEY", re.compile(r"sk-[a-zA-Z0-9]{20,}")),
     ("GITHUB_TOKEN", re.compile(r"gh[pousr]_[A-Za-z0-9_]{36,}")),
     ("AWS_KEY", re.compile(r"AKIA[0-9A-Z]{16}")),
-    ("PRIVATE_KEY", re.compile(r"-----BEGIN\s+(?:RSA|OPENSSH|EC|DSA)?\s*PRIVATE\s+KEY-----[\s\S]*?-----END\s+(?:RSA|OPENSSH|EC|DSA)?\s*PRIVATE\s+KEY-----")),
+    (
+        "PRIVATE_KEY",
+        re.compile(
+            r"-----BEGIN\s+(?:RSA|OPENSSH|EC|DSA)?\s*PRIVATE\s+KEY-----[\s\S]*?-----END\s+(?:RSA|OPENSSH|EC|DSA)?\s*PRIVATE\s+KEY-----"
+        ),
+    ),
     ("BEARER_TOKEN", re.compile(r"(?i)bearer\s+[a-zA-Z0-9_\-\.]{20,}")),
     ("EMAIL", re.compile(r"[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+")),
-    ("IPV4", re.compile(r"\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b")),
+    (
+        "IPV4",
+        re.compile(
+            r"\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b"
+        ),
+    ),
     ("USER_PATH_WIN", re.compile(r"(?i)[a-z]:\\users\\[a-z0-9_\-\.]+", re.IGNORECASE)),
     ("USER_PATH_NIX", re.compile(r"/home/[a-z0-9_\-\.]+")),
 ]
@@ -18,10 +55,19 @@ REDACTION_RULES = [
 # Patterns indicating prompt injection or system override attempts in logs
 INJECTION_PATTERNS = [
     ("ROLE_SPOOF", re.compile(r"(?i)(?:system:|assistant:|user:|<\|im_start\|>|<\|im_end\|>)")),
-    ("INSTRUCTION_OVERRIDE", re.compile(r"(?i)(?:ignore\s+previous\s+instructions|disregard\s+all\s+rules|override\s+policy|new\s+system\s+prompt|reveal\s+all\s+(?:api\s+keys|secrets))")),
-    ("EXFILTRATION_CALL", re.compile(r"(?i)(?:send\s+all\s+secrets|curl\s+https?://|wget\s+https?://|exfiltrate|os\.system|subprocess|__builtins__|socket)")),
+    (
+        "INSTRUCTION_OVERRIDE",
+        re.compile(
+            r"(?i)(?:ignore\s+previous\s+instructions|disregard\s+all\s+rules|override\s+policy|new\s+system\s+prompt|reveal\s+all\s+(?:api\s+keys|secrets))"
+        ),
+    ),
+    (
+        "EXFILTRATION_CALL",
+        re.compile(
+            r"(?i)(?:send\s+all\s+secrets|curl\s+https?://|wget\s+https?://|exfiltrate|os\.system|subprocess|__builtins__|socket)"
+        ),
+    ),
     ("PATH_TRAVERSAL_INJECTION", re.compile(r"(?i)(?:\.\.[/\\]|[/\\]etc[/\\]|backdoor)")),
-    ("MARKDOWN_TAG_INJECTION", re.compile(r"</?(?:script|iframe|style|object)>")),
 ]
 
 
@@ -54,6 +100,8 @@ class Redactor:
         for flag_name, pattern in INJECTION_PATTERNS:
             if pattern.search(text):
                 flags.append(flag_name)
+        if _has_dangerous_html_tag(text):
+            flags.append("MARKDOWN_TAG_INJECTION")
 
         # 2. Redact secrets with typed placeholders
         for token_type, pattern in REDACTION_RULES:
@@ -64,6 +112,6 @@ class Redactor:
                 for m in reversed(matches):
                     raw_val = m.group(0)
                     placeholder = self._get_placeholder(token_type, raw_val)
-                    clean_text = clean_text[:m.start()] + placeholder + clean_text[m.end():]
+                    clean_text = clean_text[: m.start()] + placeholder + clean_text[m.end() :]
 
         return clean_text, counts, flags
