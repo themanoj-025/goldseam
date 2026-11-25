@@ -2,7 +2,7 @@ name: Goldseam Failure-to-Skill Proposal Bot
 
 on:
   workflow_run:
-    workflows: ["CI Matrix"]
+    workflows: ["CI"]
     types: [completed]
 
 jobs:
@@ -18,23 +18,25 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v7
 
-      - name: Set up Python
-        uses: actions/setup-python@v7
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
         with:
-          python-version: "3.12"
+          version: "latest"
 
-      - name: Install uv and Goldseam
-        run: |
-          curl -LsSf https://astral.sh/uv/install.sh | sh
-          uv pip install --system -e .
+      - name: Set up Python
+        run: uv python install 3.12
+
+      - name: Install Goldseam
+        run: uv sync
 
       - name: Synthesize Skill Proposal (Dry Run)
         run: |
-          goldseam build --need "Synthesize skill for failed CI step in run ${{ github.event.workflow_run.id }}" --dry-run --json > proposal.json
+          uv run goldseam build --need "Synthesize skill for failed CI step in run ${{ github.event.workflow_run.id }}" --dry-run --json > proposal.json
 
       - name: Create Pull Request with Proposed Skill
         uses: peter-evans/create-pull-request@v8
         with:
+          add-paths: proposal.json
           title: "fix(skill): propose automated skill from failed CI run ${{ github.event.workflow_run.id }}"
           body: |
             ## Automated Skill Proposal
